@@ -1,15 +1,13 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./Componentes/Home";
-import Metricas from "./Componentes/Metricas"
+import Menu from "./Componentes/Menu"
 
 function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/metricas" element={<Metricas/>} />
+        <Route path="/" element={<Menu/>} />
       </Routes>
     </div>
   );

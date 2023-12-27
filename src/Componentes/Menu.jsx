@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BsGraphUp } from "react-icons/bs";
 import { BsUpload } from "react-icons/bs";
 import { Layout, Menu, theme } from "antd";
-import Metricas from './Metricas'
+import Metricas from './../Contenedores/Metricas'
 import Datos from './Datos'
 const { Header, Content, Footer, Sider } = Layout;
 

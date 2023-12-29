@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Table, Divider } from "antd";
-import { useSelector } from "react-redux";
 import Barra from "../Graficos/Barra";
 import Filtros from "../Componentes/Filtros";
 import Estadisticas from "../Graficos/Estadisticas";
@@ -8,7 +7,10 @@ import Progreso from "../Graficos/Progreso";
 import "./styles.css";
 
 export default function Metricas() {
-  const data = useSelector((state) => state.invitaciones);
+  const invitacionesString = localStorage.getItem('invitacionesData');
+  const data = invitacionesString ? JSON.parse(invitacionesString) : {};
+
+  // const data = useSelector((state) => state.invitaciones);
   const [mesEnCurso, setMesEnCurso] = useState("");
 
   const [datosFiltrados, setDatosFiltrados] = useState(data?.datos || []);

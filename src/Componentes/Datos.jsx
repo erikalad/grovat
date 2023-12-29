@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Upload, Alert, Space, Tooltip,message } from "antd";
 import { DeleteOutlined } from '@ant-design/icons';
 
 export default function Datos() {
-  const dispatch = useDispatch();
-  const data = useSelector((state) => state.invitaciones);
+  const invitacionesString = localStorage.getItem('invitacionesData');
+  const data = invitacionesString ? JSON.parse(invitacionesString) : {};
+
+  // const data = useSelector((state) => state.invitaciones);
   const [visible, setVisible] = useState(true);
   const Papa = require("papaparse");
 
@@ -21,7 +22,8 @@ export default function Datos() {
 
   const handleClose = () => {
     setVisible(false);
-    dispatch({ type: "BORRAR_INVITACIONES" });
+    // dispatch({ type: "BORRAR_INVITACIONES" });
+    localStorage.removeItem('invitacionesData');
     success()
   };
 
@@ -76,14 +78,18 @@ export default function Datos() {
         const datosFiltrados = datos.filter((objeto) => {
           return objeto.From === nombreMasComun;
         });
+        localStorage.setItem('invitacionesData', JSON.stringify({
+              encabezados: resultado.encabezados,
+              datos: datosFiltrados,
+            }));
 
-        dispatch({
-          type: "INVITACIONES",
-          payload: {
-            encabezados: resultado.encabezados,
-            datos: datosFiltrados,
-          },
-        });
+        // dispatch({
+        //   type: "INVITACIONES",
+        //   payload: {
+        //     encabezados: resultado.encabezados,
+        //     datos: datosFiltrados,
+        //   },
+        // });
       })
       .catch((error) => {
         console.error("Error al cargar el archivo CSV:", error);

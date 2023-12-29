@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { BsGraphUp } from "react-icons/bs";
 import { BsUpload } from "react-icons/bs";
 import { Layout, Menu, theme } from "antd";
-import Metricas from './../Contenedores/Metricas'
-import Datos from './Datos'
+import Metricas from "./../Contenedores/Metricas";
+import Datos from "./Datos";
+import logo from "./../imagenes/grovat.jpeg";
+import "./styles.css";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 export default function MenuDesplegable() {
@@ -15,9 +18,8 @@ export default function MenuDesplegable() {
   } = theme.useToken();
 
   const handleMenuClick = (item) => {
-    setPage(item.key); 
+    setPage(item.key);
   };
-
 
   return (
     <Layout
@@ -30,14 +32,21 @@ export default function MenuDesplegable() {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div className="demo-logo-vertical" />
-        <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline" style={{marginTop:"50px"}} onClick={handleMenuClick} >
-          <Menu.Item key="1" icon={<BsGraphUp />}>
-            <span>Métricas</span>
+        <div className="nav">
+          <img src={logo} className="logo" /> <div className="user">Bienvenido Lucas</div>
+        </div>
+        <Menu
+          theme="dark"
+          defaultSelectedKeys={["1"]}
+          mode="inline"
+          onClick={handleMenuClick}
+        >
+          <Menu.Item key="1" icon={<BsUpload />}>
+            <span>Cargar Datos</span>
           </Menu.Item>
 
-          <Menu.Item key="2" icon={<BsUpload />}>
-            <span>Cargar Datos</span>
+          <Menu.Item key="2" icon={<BsGraphUp />}>
+            <span>Métricas</span>
           </Menu.Item>
         </Menu>
       </Sider>
@@ -60,10 +69,7 @@ export default function MenuDesplegable() {
               borderRadius: borderRadiusLG,
             }}
           >
-            {page === "1" ?
-           <Metricas/>
-           : <Datos/>
-          }
+            {page === "1" ? <Datos /> : <Metricas />}
           </div>
         </Content>
         <Footer

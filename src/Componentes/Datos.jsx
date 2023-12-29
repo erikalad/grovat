@@ -1,9 +1,19 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { UploadOutlined } from "@ant-design/icons";
+import { Button, Upload, Alert, Space } from "antd";
+import { DeleteOutlined } from '@ant-design/icons';
 
 export default function Datos() {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.invitaciones);
+  const [visible, setVisible] = useState(true);
   const Papa = require("papaparse");
+
+  const handleClose = () => {
+    setVisible(false);
+    dispatch({ type: "BORRAR_INVITACIONES" });
+  };
 
   function parsearCSV(archivo) {
     return new Promise((resolve, reject) => {
@@ -16,7 +26,10 @@ export default function Datos() {
             if (objeto["Sent At"]) {
               const [rawFecha, hora] = objeto["Sent At"].split(", ");
               const [mes, dia, año] = rawFecha.split("/");
-              const fechaFormateada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${año}`;
+              const fechaFormateada = `${dia.padStart(2, "0")}/${mes.padStart(
+                2,
+                "0"
+              )}/${año}`;
               objeto["Fecha"] = fechaFormateada || "";
               objeto["Hora"] = hora || "";
               delete objeto["Sent At"];
@@ -31,24 +44,59 @@ export default function Datos() {
       });
     });
   }
-  
-  function handleFileUpload(event) {
-    const archivo = event.target.files[0];
 
-    parsearCSV(archivo)
-      .then((resultado) => {
-        console.log("Encabezados:", resultado.encabezados);
-        console.log("Datos:", resultado.datos);
-        dispatch({ type: "INVITACIONES", payload: resultado });
-      })
-      .catch((error) => {
-        console.error("Error al cargar el archivo CSV:", error);
-      });
+  function handleFileUpload(info) {
+    if (info.fileList.length > 0) {
+      const archivo = info.fileList[info.fileList.length - 1].originFileObj;
+
+      parsearCSV(archivo)
+        .then((resultado) => {
+          const datosFiltrados = resultado.datos.filter((objeto) => {
+            return objeto.From === "Natalia Bressan";
+          });
+
+          dispatch({
+            type: "INVITACIONES",
+            payload: {
+              encabezados: resultado.encabezados,
+              datos: datosFiltrados,
+            },
+          });
+        })
+        .catch((error) => {
+          console.error("Error al cargar el archivo CSV:", error);
+        });
+    }
   }
 
   return (
     <div>
-      <input type="file" onChange={handleFileUpload} />
+      <Upload
+        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+        listType="picture"
+        beforeUpload={() => false}
+        onChange={handleFileUpload}
+      >
+        <Button icon={<UploadOutlined />}>Subir CSV Invitaciones</Button>
+      </Upload>
+
+      <Space
+        direction="vertical"
+        style={{
+          width: "100%",
+          marginTop: '0.5rem'
+        }}
+      >
+        {Object.keys(data).length > 0 && visible && (
+          <Alert
+            message="Hay un archivo subido"
+            type="success"
+            closable
+            afterClose={handleClose}
+            closeIcon={<DeleteOutlined />}
+          />
+        )}
+      </Space>
     </div>
   );
 }

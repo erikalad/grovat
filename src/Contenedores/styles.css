@@ -1,0 +1,23 @@
+
+.statidistics-progress{
+    display: flex;
+    margin: 2rem 0px;
+    gap: 2rem;
+}
+
+.statidistics{
+    display: flex;
+    width: 100%;
+}
+
+.barra-tabla{
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.mes{
+    display: flex;
+    margin: 2rem 0.5rem;
+    font-weight: 300;
+}

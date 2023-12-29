@@ -1,15 +1,43 @@
-import React, { useState } from "react";
-import { Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Divider } from "antd";
 import { useSelector } from "react-redux";
 import Barra from "../Graficos/Barra";
 import Filtros from "../Componentes/Filtros";
+import Estadisticas from "../Graficos/Estadisticas";
+import Progreso from "../Graficos/Progreso";
+import './styles.css'
 
 export default function Metricas() {
+
   const data = useSelector((state) => state.invitaciones);
+  const [mesEnCurso, setMesEnCurso] = useState('');
 
   const [datosFiltrados, setDatosFiltrados] = useState(data?.datos || []);
-  
 
+  const recibirMes = (mes) => {
+    setMesEnCurso(mes);
+  };
+
+  console.log(mesEnCurso)
+
+  useEffect(() => {
+    if (Object.keys(data).length !== 0) {
+      filterByMonth(); 
+    }
+  }, [data]);
+
+  const filterByMonth = () => {
+    const mesActual = new Date().getMonth() + 1; 
+    const datosMesActual = data?.datos.filter((item) => {
+      if (item && item.Fecha) {
+        const [day, month] = item.Fecha.split("/").map(Number);
+        return month === mesActual;
+      }
+      return false;
+    });
+    setDatosFiltrados(datosMesActual || []);
+  };
+  
   const filterByDate = (selectedDates) => {
     if (!selectedDates || selectedDates.length !== 2) {
       setDatosFiltrados(data?.datos || []);
@@ -42,23 +70,44 @@ export default function Metricas() {
     }
   };
   
-  
-  
-  
-  
+  const allowedColumns = ['From', 'Fecha', 'Hora'];
 
   const primerEntrada = data && data.datos && data.datos.length > 0 ? data.datos[0] : {};
-  const columns = Object.keys(primerEntrada).map((clave, index) => ({
-    title: clave,
-    dataIndex: clave,
-    key: `columna_${index}`,
-  }));
+  
+  const columns = Object.keys(primerEntrada).map((clave, index) => {
+    const uniqueValues = Array.from(new Set(data.datos.map((item) => item[clave]))).filter(Boolean);
+  
+    const filters = allowedColumns.includes(clave)
+      ? uniqueValues.map((value) => ({ text: value, value: value }))
+      : null;
+  
+    return {
+      title: clave,
+      dataIndex: clave,
+      key: `columna_${index}`,
+      filters: filters,
+      onFilter: allowedColumns.includes(clave)
+        ? (value, record) => record[clave] === value
+        : null,
+      sorter: (a, b) => a[clave].length - b[clave].length,
+      sortDirections: ['descend'],
+    };
+  });
+
+  const filteredColumns = columns.filter(column => column.title !== 'Message');
 
   return (
     <>
-      <Filtros onFilterByDate={filterByDate} data={data}/> 
-      <Barra data={datosFiltrados} />
-      <Table columns={columns} dataSource={datosFiltrados} />
+      <Filtros onFilterByDate={filterByDate} data={data} recibirMes={recibirMes}/> 
+      <Divider orientation="left"><div className="mes">{mesEnCurso.charAt(0).toUpperCase() + mesEnCurso.slice(1)}</div></Divider>
+      <div className="statidistics-progress">
+      <Estadisticas className='statidistics' data={datosFiltrados}/>
+      <Progreso data={datosFiltrados}/>
+      </div>
+      <div className="barra-tabla">
+      <Barra data={datosFiltrados}/>
+      <Table columns={filteredColumns} dataSource={datosFiltrados} scroll={{ x: 'max-content', y: 300 }}/>
+      </div>
     </>
   );
 }

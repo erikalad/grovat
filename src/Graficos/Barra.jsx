@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Column } from '@ant-design/plots';
 
+
 export default function Barra({ data }) {
   const [graficoData, setGraficoData] = useState([]);
   console.log("data grafico",data)
@@ -25,22 +26,20 @@ export default function Barra({ data }) {
       fecha: fecha,
       invitaciones: conteoPorFecha[fecha],
     }));
+    
+    datosGrafico.reverse();
 
-    datosGrafico.sort((a, b) => {
-      const dateA = new Date(a.fecha);
-      const dateB = new Date(b.fecha);
-      return dateA - dateB;
-    });
 
     setGraficoData(datosGrafico);
   }, [data]);
+
+  
 
   const config = {
     data: graficoData,
     xField: 'fecha',
     yField: 'invitaciones',
     label: {
-      position: 'middle',
       style: {
         fill: '#FFFFFF',
         opacity: 0.6,
@@ -51,6 +50,8 @@ export default function Barra({ data }) {
         autoHide: true,
         autoRotate: false,
       },
+      transpose: true,
+      position: 'bottom'
     },
     meta: {
       type: {
@@ -62,5 +63,5 @@ export default function Barra({ data }) {
     },
   };
 
-  return <Column {...config} />;
+  return <Column {...config}/>;
 }

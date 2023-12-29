@@ -6,7 +6,6 @@ const initialState = {
     switch (action.type) {
         case "INVITACIONES":
           localStorage.setItem('invitacionesData', JSON.stringify(action.payload));
-          console.log(action.payload)
             return {
                 ...state,
                 invitaciones: action.payload,

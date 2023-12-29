@@ -7,7 +7,6 @@ const twoColors = {
 };
 
 const Progreso = ({data}) => {
-  console.log(data)
   const totalObjetivo = 800;
   const porcentaje = Math.min((data.length / totalObjetivo) * 100, 100).toFixed(0);
 

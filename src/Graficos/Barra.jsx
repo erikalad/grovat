@@ -4,8 +4,6 @@ import { Column } from '@ant-design/plots';
 
 export default function Barra({ data }) {
   const [graficoData, setGraficoData] = useState([]);
-  console.log("data grafico",data)
-
   useEffect(() => {
     if (!data || !data) {
       setGraficoData([]);

@@ -17,8 +17,6 @@ export default function Metricas() {
     setMesEnCurso(mes);
   };
 
-  console.log(mesEnCurso);
-
   useEffect(() => {
     if (Object.keys(data).length !== 0) {
       filterByMonth();

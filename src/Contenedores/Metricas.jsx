@@ -23,7 +23,7 @@ export default function Metricas() {
     if (Object.keys(data).length !== 0) {
       filterByMonth();
     }
-  }, [data]);
+  }, []);
 
   const filterByMonth = () => {
     const mesActual = new Date().getMonth() + 1;
@@ -110,6 +110,7 @@ export default function Metricas() {
   const filteredColumns = columns.filter(
     (column) => !excludedColumns.includes(column.title)
   );
+
 
   return (
     <>

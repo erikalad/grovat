@@ -46,6 +46,23 @@
   width: 50%;
 }
 
+@media (max-width: 1000px) {
+  .img-login{
+    display: none;
+  }
+
+  .login {
+    width: 100%;
+    background-image: url(./../imagenes/grovat-fondo.jpeg);
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    background-size: 50%;
+    height: 800px;
+    background-color: #25272E;
+  }
+  
+}
+
 .form-login{
   display: flex;
   justify-content: center;

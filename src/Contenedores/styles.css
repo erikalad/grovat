@@ -1,23 +1,31 @@
-
-.statidistics-progress{
-    display: flex;
-    margin: 2rem 0px;
-    gap: 2rem;
+.statidistics-progress {
+  display: flex;
+  gap: 2rem;
 }
 
-.statidistics{
-    display: flex;
-    width: 100%;
+.statidistics {
+  display: flex;
+  width: 100%;
 }
 
-.barra-tabla{
-    display: flex;
-    flex-direction: column;
-    gap: 5rem;
+.contenedor-estadisticas-barra {
+  display: flex;
+  flex-direction: column;
+  width: 55%;
+  gap: 2rem;
 }
 
-.mes{
-    display: flex;
-    margin: 2rem 0.5rem;
-    font-weight: 300;
+.tabla {
+  width: 40%;
+}
+
+.mes {
+  display: flex;
+  margin: 2rem 0.5rem;
+  font-weight: 300;
+}
+
+.contenedor-metricas {
+  display: flex;
+  gap: 4rem;
 }

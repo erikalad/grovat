@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, Upload, Alert, Space } from "antd";
+import { Button, Upload, Alert, Space, Tooltip } from "antd";
 import { DeleteOutlined } from '@ant-design/icons';
 
 export default function Datos() {
@@ -50,22 +50,34 @@ export default function Datos() {
       const archivo = info.fileList[info.fileList.length - 1].originFileObj;
 
       parsearCSV(archivo)
-        .then((resultado) => {
-          const datosFiltrados = resultado.datos.filter((objeto) => {
-            return objeto.From === "Natalia Bressan";
-          });
+      .then((resultado) => {
+        const { datos } = resultado;
+        const nombres = datos.map((objeto) => objeto.From);
+        
+        const contadorNombres = nombres.reduce((contador, nombre) => {
+          contador[nombre] = (contador[nombre] || 0) + 1;
+          return contador;
+        }, {});
 
-          dispatch({
-            type: "INVITACIONES",
-            payload: {
-              encabezados: resultado.encabezados,
-              datos: datosFiltrados,
-            },
-          });
-        })
-        .catch((error) => {
-          console.error("Error al cargar el archivo CSV:", error);
+        const nombreMasComun = Object.keys(contadorNombres).reduce((a, b) =>
+          contadorNombres[a] > contadorNombres[b] ? a : b
+        );
+
+        const datosFiltrados = datos.filter((objeto) => {
+          return objeto.From === nombreMasComun;
         });
+
+        dispatch({
+          type: "INVITACIONES",
+          payload: {
+            encabezados: resultado.encabezados,
+            datos: datosFiltrados,
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Error al cargar el archivo CSV:", error);
+      });
     }
   }
 
@@ -93,7 +105,11 @@ export default function Datos() {
             type="success"
             closable
             afterClose={handleClose}
-            closeIcon={<DeleteOutlined />}
+            closeIcon={
+              <Tooltip title="Borrar archivo">
+                <DeleteOutlined />
+              </Tooltip>
+            }
           />
         )}
       </Space>

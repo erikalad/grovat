@@ -1,13 +1,29 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import Menu from "./Componentes/Menu"
+import Login from "./Contenedores/Login";
 
 function App() {
+
+  const ProtectedRoute = ({ element }) => {
+    const isLoggedIn = localStorage.getItem("username") && localStorage.getItem("password");
+    return isLoggedIn ? element : <Navigate to="/" />;
+  };
+
+
   return (
-    <div className="App">
+<div className="App">
       <Routes>
-        <Route path="/" element={<Menu/>} />
+        <Route path="/" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute
+              element={<Menu />}
+            />
+          }
+        />
       </Routes>
     </div>
   );

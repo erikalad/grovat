@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, Upload, Alert, Space, Tooltip } from "antd";
+import { Button, Upload, Alert, Space, Tooltip,message } from "antd";
 import { DeleteOutlined } from '@ant-design/icons';
 
 export default function Datos() {
@@ -10,9 +10,19 @@ export default function Datos() {
   const [visible, setVisible] = useState(true);
   const Papa = require("papaparse");
 
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'El archivo fue eliminado correctamente',
+    });
+  };
+
+
   const handleClose = () => {
     setVisible(false);
     dispatch({ type: "BORRAR_INVITACIONES" });
+    success()
   };
 
   function parsearCSV(archivo) {
@@ -99,6 +109,7 @@ export default function Datos() {
           marginTop: '0.5rem'
         }}
       >
+              {contextHolder}
         {Object.keys(data).length > 0 && visible && (
           <Alert
             message="Hay un archivo subido"

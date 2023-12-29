@@ -12,6 +12,15 @@ const { Header, Content, Footer, Sider } = Layout;
 export default function MenuDesplegable() {
   const [collapsed, setCollapsed] = useState(false);
   const [page, setPage] = useState("1");
+  const username = localStorage.getItem('username');
+
+  const usernameMappings = {
+    lourdesaraoz: 'Lourdes',
+    lucasdeleon: 'Lucas',
+    // Agrega más mappings según necesites
+  };
+
+  const formattedUsername = usernameMappings[username] || username;
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -33,7 +42,7 @@ export default function MenuDesplegable() {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="nav">
-          <img src={logo} className="logo" /> <div className="user">Bienvenido Lucas</div>
+          <img src={logo} className="logo" /> <div className="user">Bienvenid@ {formattedUsername}</div>
         </div>
         <Menu
           theme="dark"

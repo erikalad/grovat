@@ -29,3 +29,35 @@
   display: flex;
   gap: 4rem;
 }
+
+.contenedor-login{
+  display: flex;
+}
+
+.img-fondo{
+  width: 100%;
+}
+
+.login{
+  width: 50%;
+}
+
+.img-login{
+  width: 50%;
+}
+
+.form-login{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40%;
+}
+
+.boton-login{
+width: 100%;
+background-color: #25272E;
+}
+
+.boton-login:hover{
+  background-color: #818181 !important;
+  }

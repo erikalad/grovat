@@ -86,7 +86,7 @@ export default function MenuDesplegable() {
             textAlign: "center",
           }}
         >
-          Grovat ©2023
+          Grovat ©2024
         </Footer>
       </Layout>
     </Layout>

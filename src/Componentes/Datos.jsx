@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Upload, Alert, Space, Tooltip, message } from "antd";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from "@ant-design/icons";
 
 export default function Datos() {
-  const numArchivosCargados = localStorage.getItem('numArchivosCargados') || 0;
+  const numArchivosCargados = localStorage.getItem("numArchivosCargados") || 0;
   const Papa = require("papaparse");
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -12,8 +12,8 @@ export default function Datos() {
   useEffect(() => {
     if (showSuccessMessage) {
       messageApi.open({
-        type: 'success',
-        content: 'El archivo fue eliminado correctamente',
+        type: "success",
+        content: "El archivo fue eliminado correctamente",
       });
       setShowSuccessMessage(false);
     }
@@ -24,15 +24,15 @@ export default function Datos() {
   };
 
   const handleCloseAlert = (id) => {
-    const invitacionesString = localStorage.getItem('invitacionesData');
+    const invitacionesString = localStorage.getItem("invitacionesData");
     let data = invitacionesString ? JSON.parse(invitacionesString) : [];
 
     const newData = data.filter((item) => item.id !== id);
 
-    localStorage.setItem('invitacionesData', JSON.stringify(newData));
+    localStorage.setItem("invitacionesData", JSON.stringify(newData));
 
     const archivosRestantes = newData.length;
-    localStorage.setItem('numArchivosCargados', archivosRestantes);
+    localStorage.setItem("numArchivosCargados", archivosRestantes);
 
     setShowSuccessMessage(true);
   };
@@ -71,14 +71,15 @@ export default function Datos() {
     if (info.fileList.length > 0) {
       const archivo = info.fileList[info.fileList.length - 1].originFileObj;
 
-      const numArchivosCargados = parseInt(localStorage.getItem('numArchivosCargados')) || 0;
+      const numArchivosCargados =
+        parseInt(localStorage.getItem("numArchivosCargados")) || 0;
       const nuevosArchivosCargados = numArchivosCargados + 1;
 
       parsearCSV(archivo)
         .then((resultado) => {
           const { datos } = resultado;
           const nombres = datos.map((objeto) => objeto.From);
-            
+
           const contadorNombres = nombres.reduce((contador, nombre) => {
             contador[nombre] = (contador[nombre] || 0) + 1;
             return contador;
@@ -88,10 +89,12 @@ export default function Datos() {
             contadorNombres[a] > contadorNombres[b] ? a : b
           );
 
-          const datosFiltrados = datos.filter((objeto) => objeto.From === nombreMasComun);
+          const datosFiltrados = datos.filter(
+            (objeto) => objeto.From === nombreMasComun
+          );
 
           // Obtener los datos existentes del localStorage como array
-          const invitacionesString = localStorage.getItem('invitacionesData');
+          const invitacionesString = localStorage.getItem("invitacionesData");
           const data = invitacionesString ? JSON.parse(invitacionesString) : [];
 
           // Agregar los nuevos datos al array existente con ID único
@@ -103,8 +106,11 @@ export default function Datos() {
           const datosFinales = [...data, nuevoArchivo];
 
           // Almacenar los datos combinados en el localStorage como un array de objetos
-          localStorage.setItem('invitacionesData', JSON.stringify(datosFinales));
-          localStorage.setItem('numArchivosCargados', nuevosArchivosCargados);
+          localStorage.setItem(
+            "invitacionesData",
+            JSON.stringify(datosFinales)
+          );
+          localStorage.setItem("numArchivosCargados", nuevosArchivosCargados);
         })
         .catch((error) => {
           console.error("Error al cargar el archivo CSV:", error);
@@ -127,31 +133,36 @@ export default function Datos() {
         direction="vertical"
         style={{
           width: "100%",
-          marginTop: '0.5rem'
+          marginTop: "0.5rem",
         }}
       >
         {contextHolder}
 
         {/* Mostrar Alert según el número de archivos cargados */}
         {Array.from({ length: numArchivosCargados }, (_, index) => {
-          const invitacionesString = localStorage.getItem('invitacionesData');
+          const invitacionesString = localStorage.getItem("invitacionesData");
           const data = invitacionesString ? JSON.parse(invitacionesString) : [];
           const archivo = data[index];
 
-          return (
-            <Alert
-              key={archivo.id}
-              message="Hay un archivo subido"
-              type="success"
-              closable
-              afterClose={() => handleCloseAlert(archivo.id)}
-              closeIcon={
-                <Tooltip title="Borrar archivo">
-                  <DeleteOutlined />
-                </Tooltip>
-              }
-            />
-          );
+          // Verificar si archivo existe antes de usar su propiedad 'id'
+          if (archivo) {
+            return (
+              <Alert
+                key={archivo.id}
+                message="Hay un archivo subido"
+                type="success"
+                closable
+                afterClose={() => handleCloseAlert(archivo.id)}
+                closeIcon={
+                  <Tooltip title="Borrar archivo">
+                    <DeleteOutlined />
+                  </Tooltip>
+                }
+              />
+            );
+          }
+
+          return null; // Retorna null si el archivo no está definido
         })}
       </Space>
     </div>

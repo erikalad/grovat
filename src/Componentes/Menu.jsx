@@ -17,7 +17,6 @@ export default function MenuDesplegable() {
   const usernameMappings = {
     lourdesaraoz: 'Lourdes',
     lucasdeleon: 'Lucas',
-    // Agrega más mappings según necesites
   };
 
   const formattedUsername = usernameMappings[username] || username;

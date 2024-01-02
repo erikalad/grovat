@@ -16,7 +16,7 @@
 }
 
 .tabla {
-  width: 40%;
+  width: 45%;
 }
 
 .mes {
@@ -27,7 +27,7 @@
 
 .contenedor-metricas {
   display: flex;
-  gap: 4rem;
+  gap: 1rem;
 }
 
 .contenedor-login{
@@ -46,7 +46,7 @@
   width: 50%;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .img-login{
     display: none;
   }
@@ -59,6 +59,18 @@
     background-size: 50%;
     height: 800px;
     background-color: #25272E;
+  }
+
+  .contenedor-metricas{
+    flex-direction: column;
+  }
+
+  .contenedor-estadisticas-barra{
+    width: 100%;
+  }
+
+  .tabla {
+    width: 100%;
   }
   
 }

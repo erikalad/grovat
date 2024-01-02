@@ -8,12 +8,17 @@ import "./styles.css";
 
 export default function Metricas() {
   const invitacionesString = localStorage.getItem('invitacionesData');
-  const data = invitacionesString ? JSON.parse(invitacionesString) : {};
+  const archivos = invitacionesString ? JSON.parse(invitacionesString) : [];
+  
+// Obtener un array con los objetos 'datos' concatenados
+const datosConcatenados = archivos.flatMap(archivo => archivo.datos);
 
-  // const data = useSelector((state) => state.invitaciones);
+// Crear el objeto 'data' con la propiedad 'datos' que contiene la concatenación de todos los objetos 'datos'
+const data = { datos: datosConcatenados };
+
   const [mesEnCurso, setMesEnCurso] = useState("");
 
-  const [datosFiltrados, setDatosFiltrados] = useState(data?.datos || []);
+  const [datosFiltrados, setDatosFiltrados] = useState(data.datos || []);
 
   const recibirMes = (mes) => {
     setMesEnCurso(mes);

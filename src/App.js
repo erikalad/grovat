@@ -11,6 +11,10 @@ function App() {
     return isLoggedIn ? element : <Navigate to="/" />;
   };
 
+  useEffect(() => {
+    localStorage.removeItem("invitacionesData");
+  }, []);
+
 
   return (
 <div className="App">

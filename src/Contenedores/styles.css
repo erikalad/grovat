@@ -8,15 +8,29 @@
   width: 100%;
 }
 
-.contenedor-estadisticas-barra {
-  display: flex;
-  flex-direction: column;
-  width: 55%;
-  gap: 2rem;
+.barra-button{
+  width: 50%;
 }
 
-.tabla {
-  width: 45%;
+.carta{
+  border: 0.5px solid rgb(212, 212, 212);
+  border-radius: 20px;
+  background-color: rgb(255, 255, 255);
+ /*  box-shadow: 10px 10px 5px 0px rgba(211,211,211,0.75);
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(211,211,211,0.75);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(211,211,211,0.75);  */
+box-shadow: 2px 4px 5px -2px rgba(182, 182, 182, 0.75);
+-webkit-box-shadow: 2px 4px 5px -2px rgba(182, 182, 182, 0.75);
+-moz-box-shadow: 2px 4px 5px -2px rgba(182, 182, 182, 0.75);
+  padding: 1rem;
+  margin-bottom: 1rem;
+} 
+
+.contenedor-estadisticas-barra {
+  display: flex;
+  width: 100%;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 .mes {
@@ -70,9 +84,7 @@
     width: 100%;
   }
 
-  .tabla {
-    width: 100%;
-  }
+
   
 }
 

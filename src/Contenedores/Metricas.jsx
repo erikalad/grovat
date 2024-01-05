@@ -1,22 +1,79 @@
 import React, { useEffect, useState } from "react";
-import { Table, Divider } from "antd";
+import { Table, Divider, Button, Modal, Tooltip } from "antd";
 import Barra from "../Graficos/Barra";
 import Filtros from "../Componentes/Filtros";
 import Estadisticas from "../Graficos/Estadisticas";
 import Progreso from "../Graficos/Progreso";
+import { BsTable } from "react-icons/bs";
+import { BsInfo } from "react-icons/bs";
+
 import "./styles.css";
 
 export default function Metricas() {
-  const invitacionesString = localStorage.getItem('invitacionesData');
+  const invitacionesString = localStorage.getItem("invitacionesData");
   const archivos = invitacionesString ? JSON.parse(invitacionesString) : [];
-  
-// Obtener un array con los objetos 'datos' concatenados
-const datosConcatenados = archivos.flatMap(archivo => archivo.datos);
-
-// Crear el objeto 'data' con la propiedad 'datos' que contiene la concatenación de todos los objetos 'datos'
-const data = { datos: datosConcatenados };
-
+  const datosConcatenados = archivos.flatMap((archivo) => archivo.datos);
+  const data = { datos: datosConcatenados };
   const [mesEnCurso, setMesEnCurso] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const obtenerMesesFiltrados = () => {
+    const meses = datosFiltrados.reduce((acc, item) => {
+      const [_, month] = item.Fecha.split("/").map(Number);
+      const nombreMes = obtenerNombreMes(month);
+      if (!acc.includes(nombreMes)) {
+        acc.push(nombreMes);
+      }
+      return acc;
+    }, []);
+
+    return meses.join(", ");
+  };
+
+  const obtenerMesEnCurso = () => {
+    const mesActual = new Date().getMonth() + 1;
+    return obtenerNombreMes(mesActual);
+  };
+
+  const obtenerNombreMes = (numeroMes) => {
+    const meses = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+    return meses[numeroMes - 1];
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const info = () => {
+    Modal.info({
+      title: "Mensaje importante",
+      content: (
+        <div>
+          Esta visualización presenta exclusivamente las invitaciones enviadas
+          desde la cuenta de origen. No se consideran las invitaciones recibidas
+          en este conjunto de datos.
+        </div>
+      ),
+      onOk() {},
+    });
+  };
 
   const [datosFiltrados, setDatosFiltrados] = useState(data.datos || []);
 
@@ -116,7 +173,6 @@ const data = { datos: datosConcatenados };
     (column) => !excludedColumns.includes(column.title)
   );
 
-
   return (
     <>
       <Filtros
@@ -126,24 +182,105 @@ const data = { datos: datosConcatenados };
       />
       <Divider orientation="left">
         <div className="mes">
-          {mesEnCurso.charAt(0).toUpperCase() + mesEnCurso.slice(1)}
+          {datosFiltrados.length > 0
+            ? obtenerMesesFiltrados()
+            : obtenerMesEnCurso()}
         </div>
       </Divider>
-      <div className="contenedor-metricas">
-        <div className="contenedor-estadisticas-barra">
-          <div className="statidistics-progress">
-            <Estadisticas className="statidistics" data={datosFiltrados} />
-            <Progreso data={datosFiltrados} />
-          </div>
+      <div className="statidistics-progress">
+        <Estadisticas className="statidistics" data={datosFiltrados} />
+        <Progreso data={datosFiltrados} />
+      </div>
+      <div className="contenedor-estadisticas-barra">
+        <div className="barra-button carta">
           <Barra data={datosFiltrados} />
+          <Tooltip title="Ver detalle de los datos">
+            <Button
+              onClick={showModal}
+              shape="circle"
+              icon={<BsTable />}
+              style={{ marginRight: "1rem" }}
+            ></Button>
+          </Tooltip>
+          <Tooltip title="Importante">
+            <Button onClick={info} shape="circle" icon={<BsInfo />} />
+          </Tooltip>
         </div>
-        <div className="tabla">
-          <Table
-            columns={filteredColumns}
-            dataSource={datosFiltrados}
-            scroll={{ x: "max-content", y: 600 }}
-          />
+        <Modal
+          title="Invitaciones"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+          width={1000}
+        >
+          <div className="tabla">
+            <Table
+              columns={filteredColumns}
+              dataSource={datosFiltrados}
+              scroll={{ x: "max-content", y: 600 }}
+            />
+          </div>
+        </Modal>
+
+        <div className="barra-button carta">
+          <Barra data={datosFiltrados} />
+          <Tooltip title="Ver detalle de los datos">
+            <Button
+              onClick={showModal}
+              shape="circle"
+              icon={<BsTable />}
+              style={{ marginRight: "1rem" }}
+            ></Button>
+          </Tooltip>
+          <Tooltip title="Importante">
+            <Button onClick={info} shape="circle" icon={<BsInfo />} />
+          </Tooltip>
         </div>
+        <Modal
+          title="Invitaciones"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+          width={1000}
+        >
+          <div className="tabla">
+            <Table
+              columns={filteredColumns}
+              dataSource={datosFiltrados}
+              scroll={{ x: "max-content", y: 600 }}
+            />
+          </div>
+        </Modal>
+
+        <div className="barra-button carta">
+          <Barra data={datosFiltrados} />
+          <Tooltip title="Ver detalle de los datos">
+            <Button
+              onClick={showModal}
+              shape="circle"
+              icon={<BsTable />}
+              style={{ marginRight: "1rem" }}
+            ></Button>
+          </Tooltip>
+          <Tooltip title="Importante">
+            <Button onClick={info} shape="circle" icon={<BsInfo />} />
+          </Tooltip>
+        </div>
+        <Modal
+          title="Invitaciones"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+          width={1000}
+        >
+          <div className="tabla">
+            <Table
+              columns={filteredColumns}
+              dataSource={datosFiltrados}
+              scroll={{ x: "max-content", y: 600 }}
+            />
+          </div>
+        </Modal>
       </div>
     </>
   );

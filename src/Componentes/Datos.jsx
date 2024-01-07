@@ -101,6 +101,8 @@ export default function Datos() {
     });
   }
 
+  const moment = require('moment');
+
   function parsearCSVConexiones(archivo) {
     return new Promise((resolve, reject) => {
       Papa.parse(archivo, {
@@ -109,10 +111,29 @@ export default function Datos() {
         skipEmptyLines: true,
         complete: function (results) {
           const filas = results.data;
-          const encabezados = filas[2]; 
-          const datos = filas.slice(3); 
+          const encabezados = filas[2];
+          const datos = filas.slice(3);
   
-          resolve({ encabezados, datos });
+          const datosFormateados = datos.map((fila) => {
+            const filaObjeto = {};
+            encabezados.forEach((encabezado, index) => {
+              if (encabezado === 'Connected On') {
+                const fechaFormateada = moment(fila[index], 'DD MMM YYYY').format('DD/MM/YYYY');
+                filaObjeto[encabezado] = fechaFormateada;
+              } else {
+                filaObjeto[encabezado] = fila[index];
+              }
+            });
+            return filaObjeto;
+          });
+  
+          const nuevoArchivo = {
+            id: generateUniqueId(),
+            encabezados: encabezados,
+            datos: datosFormateados,
+          };
+  
+          resolve(nuevoArchivo);
         },
         error: function (error) {
           reject(error);
@@ -120,6 +141,8 @@ export default function Datos() {
       });
     });
   }
+  
+  
 
   function handleFileUpload(info) {
     if (info.fileList.length > 0) {

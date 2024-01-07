@@ -1,21 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Table, Divider, Button, Modal, Tooltip } from "antd";
-import Barra from "../Graficos/Barra";
+import { Divider } from "antd";
 import Filtros from "../Componentes/Filtros";
 import Estadisticas from "../Graficos/Estadisticas";
 import Progreso from "../Graficos/Progreso";
-import { BsTable } from "react-icons/bs";
-import { BsInfo } from "react-icons/bs";
 
 import "./styles.css";
+import MetricasDetalle from "./MetricasDetalle";
+import TreeMapComponent from "../Graficos/Treemap";
+import EstadisticasConexiones from "../Graficos/EstadisticasConexiones";
+import ProgresoConexiones from "../Graficos/ProgresoConexiones";
 
 export default function Metricas() {
   const invitacionesString = localStorage.getItem("invitacionesData");
   const archivos = invitacionesString ? JSON.parse(invitacionesString) : [];
+  const cantArchivos = archivos.length
+  const conexionesString = localStorage.getItem("conexionesData");
+  const archivosConexiones = conexionesString ? JSON.parse(conexionesString) : [];
+  const cantConex = archivosConexiones.length
+  const mensajesString = localStorage.getItem("mensajesData");
+  const archivosMensajes = mensajesString ? JSON.parse(mensajesString) : [];
+  const cantMens = archivosMensajes.length
+
   const datosConcatenados = archivos.flatMap((archivo) => archivo.datos);
+  const datosConcatenadosConexiones = archivosConexiones.flatMap((archivo) => archivo.datos);
+  const datosConcatenadosMensajes = archivosMensajes.flatMap((archivo) => archivo.datos);
+
   const data = { datos: datosConcatenados };
+  const dataCon = { datos: datosConcatenadosConexiones };
+  const dataMes = { datos: datosConcatenadosMensajes };
+
+  const [datosFiltrados, setDatosFiltrados] = useState(data.datos || []);
+  const [datosFiltradoCon, setDatosFiltradosCon] = useState(dataCon.datos || []);
+  const [datosFiltradosMes, setDatosFiltradosMes] = useState(dataMes.datos || []);
+
   const [mesEnCurso, setMesEnCurso] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const obtenerMesesFiltrados = () => {
     const meses = datosFiltrados.reduce((acc, item) => {
@@ -53,39 +71,49 @@ export default function Metricas() {
     return meses[numeroMes - 1];
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const info = () => {
-    Modal.info({
-      title: "Mensaje importante",
-      content: (
-        <div>
-          Esta visualización presenta exclusivamente las invitaciones enviadas
-          desde la cuenta de origen. No se consideran las invitaciones recibidas
-          en este conjunto de datos.
-        </div>
-      ),
-      onOk() {},
-    });
-  };
-
-  const [datosFiltrados, setDatosFiltrados] = useState(data.datos || []);
-
   const recibirMes = (mes) => {
     setMesEnCurso(mes);
+  };
+
+  const filterByMonthConexiones = () => {
+    const mesActual = new Date().getMonth() + 1;
+    const datosMesActual = dataCon?.datos.filter((item) => {
+      if (item && item["Connected On"]) {
+        const [day, month] = item["Connected On"].split("/").map(Number);
+        return month === mesActual;
+      }
+      return false;
+    });
+
+    setDatosFiltradosCon(datosMesActual || []);
+  };
+
+
+  
+  const filterByMonthMensajes = () => {
+    const mesActual = new Date().getMonth() + 1;
+    const datosMesActual = dataMes?.datos.filter((item) => {
+      if (item && item.DATE.DATE) {
+        const [day, month] = item.DATE.DATE.split("/").map(Number);
+        return month === mesActual;
+      }
+      return false;
+    });
+    setDatosFiltradosMes(datosMesActual || []);
   };
 
   useEffect(() => {
     if (Object.keys(data).length !== 0) {
       filterByMonth();
     }
-  }, []);
+    if (Object.keys(dataCon).length !== 0) {
+      filterByMonthConexiones(); 
+    }
+    if (Object.keys(dataMes).length !== 0) {
+      filterByMonthMensajes(); 
+    }
+    
+    }, []);
 
   const filterByMonth = () => {
     const mesActual = new Date().getMonth() + 1;
@@ -102,6 +130,8 @@ export default function Metricas() {
   const filterByDate = (selectedDates) => {
     if (!selectedDates || selectedDates.length !== 2) {
       setDatosFiltrados(data?.datos || []);
+      setDatosFiltradosCon(dataCon?.datos || []); // Agregar el setDatosFiltradosCon aquí
+      setDatosFiltradosMes(dataMes?.datos || []); // Agregar el setDatosFiltradosMes aquí
     } else {
       const [startDay, startMonth, startYear] = selectedDates[0]
         .split("/")
@@ -111,7 +141,7 @@ export default function Metricas() {
         .map(Number);
       const startDate = new Date(startYear + 2000, startMonth - 1, startDay);
       const endDate = new Date(endYear + 2000, endMonth - 1, endDay);
-
+  
       const filteredData = data?.datos.filter((item) => {
         if (item && item.Fecha) {
           const [day, month, year] = item.Fecha.split("/").map(Number);
@@ -120,25 +150,52 @@ export default function Metricas() {
         }
         return false;
       });
-
+  
       const sortedData = filteredData?.sort((a, b) => {
         const [dayA, monthA, yearA] = a.Fecha.split("/").map(Number);
         const dateA = new Date(yearA + 2000, monthA - 1, dayA);
-
+  
         const [dayB, monthB, yearB] = b.Fecha.split("/").map(Number);
         const dateB = new Date(yearB + 2000, monthB - 1, dayB);
-
+  
         return dateA - dateB;
       });
-
+  
       setDatosFiltrados(sortedData || []);
+  
+      // Filtrar dataCon
+      const filteredDataCon = dataCon?.datos.filter((item) => {
+        if (item && item["Connected On"]) {
+          const [day, month, year] = item["Connected On"].split("/").map(Number);
+          const itemDate = new Date(year, month - 1, day);
+          return itemDate >= startDate && itemDate <= endDate;
+        }
+        return false;
+      });
+      setDatosFiltradosCon(filteredDataCon || []);
+  
+      // Filtrar dataMes
+      const filteredDataMes = dataMes?.datos.filter((item) => {
+        if (item && item.DATE && item.DATE.DATE) {
+          const [day, month, year] = item.DATE.DATE.split("/").map(Number);
+          const itemDate = new Date(year, month - 1, day);
+          return itemDate >= startDate && itemDate <= endDate;
+        }
+        return false;
+      });
+      setDatosFiltradosMes(filteredDataMes || []);
     }
   };
+  
 
   const allowedColumns = ["From", "Fecha", "Hora"];
 
   const primerEntrada =
     data && data.datos && data.datos.length > 0 ? data.datos[0] : {};
+  const primerEntradaCon =
+  dataCon && dataCon.datos && dataCon.datos.length > 0 ? dataCon.datos[0] : {};
+  const primerEntradaMes =
+  dataMes && dataMes.datos && dataMes.datos.length > 0 ? dataMes.datos[0] : {};
 
   const columns = Object.keys(primerEntrada).map((clave, index) => {
     const uniqueValues = Array.from(
@@ -173,6 +230,50 @@ export default function Metricas() {
     (column) => !excludedColumns.includes(column.title)
   );
 
+  const columnsConexiones = Object.keys(primerEntradaCon).map((clave, index) => {
+    let columnConfig = {};
+  
+    if (clave === 'First Name' || clave === 'Last Name') {
+      // Columna de nombre completo
+      columnConfig = {
+        title: 'Name',
+        dataIndex: 'Name',
+        key: 'Name',
+        render: (_, record) => `${record['First Name']} ${record['Last Name']}`,
+      };
+    } else if (clave === 'Connected On') {
+      // Columna de fecha con el formato dd/mm/aaaa
+      columnConfig = {
+        title: 'Connected On',
+        dataIndex: 'Connected On',
+        key: 'Connected On',
+        render: (date) => {
+          const [day, month, year] = date.split('/');
+          return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        },
+      };
+    } else if (clave === 'Position' || clave === 'URL') {
+      // Columnas restantes excepto Company
+      if (clave !== 'Company') {
+        columnConfig = {
+          title: clave,
+          dataIndex: clave,
+          key: `columna_${index}`,
+        };
+      }
+    }
+  
+    return columnConfig;
+  });
+  
+  const columnsConexionesFiltered = columnsConexiones.filter((column, index, self) =>
+    index === self.findIndex((c) => c.dataIndex === column.dataIndex) && column.title
+  );
+  
+  
+
+
+
   return (
     <>
       <Filtros
@@ -188,99 +289,20 @@ export default function Metricas() {
         </div>
       </Divider>
       <div className="statidistics-progress">
-        <Estadisticas className="statidistics" data={datosFiltrados} />
+        <Estadisticas className="statidistics" data={datosFiltrados} cantArchivos={cantArchivos} type='invitaciones'/>
         <Progreso data={datosFiltrados} />
+        <EstadisticasConexiones className="statidistics" data={datosFiltradoCon}/>
+        <ProgresoConexiones data={datosFiltradoCon} invitaciones={datosFiltrados}/>
+        <Estadisticas className="statidistics" data={datosFiltradosMes} cantArchivos={cantMens} type='mensajes'/>
+        <Progreso data={datosFiltradosMes} />
       </div>
       <div className="contenedor-estadisticas-barra">
-        <div className="barra-button carta">
-          <Barra data={datosFiltrados} />
-          <Tooltip title="Ver detalle de los datos">
-            <Button
-              onClick={showModal}
-              shape="circle"
-              icon={<BsTable />}
-              style={{ marginRight: "1rem" }}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="Importante">
-            <Button onClick={info} shape="circle" icon={<BsInfo />} />
-          </Tooltip>
-        </div>
-        <Modal
-          title="Invitaciones"
-          open={isModalOpen}
-          onCancel={handleCancel}
-          footer={null}
-          width={1000}
-        >
-          <div className="tabla">
-            <Table
-              columns={filteredColumns}
-              dataSource={datosFiltrados}
-              scroll={{ x: "max-content", y: 600 }}
-            />
-          </div>
-        </Modal>
-
-        <div className="barra-button carta">
-          <Barra data={datosFiltrados} />
-          <Tooltip title="Ver detalle de los datos">
-            <Button
-              onClick={showModal}
-              shape="circle"
-              icon={<BsTable />}
-              style={{ marginRight: "1rem" }}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="Importante">
-            <Button onClick={info} shape="circle" icon={<BsInfo />} />
-          </Tooltip>
-        </div>
-        <Modal
-          title="Invitaciones"
-          open={isModalOpen}
-          onCancel={handleCancel}
-          footer={null}
-          width={1000}
-        >
-          <div className="tabla">
-            <Table
-              columns={filteredColumns}
-              dataSource={datosFiltrados}
-              scroll={{ x: "max-content", y: 600 }}
-            />
-          </div>
-        </Modal>
-
-        <div className="barra-button carta">
-          <Barra data={datosFiltrados} />
-          <Tooltip title="Ver detalle de los datos">
-            <Button
-              onClick={showModal}
-              shape="circle"
-              icon={<BsTable />}
-              style={{ marginRight: "1rem" }}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="Importante">
-            <Button onClick={info} shape="circle" icon={<BsInfo />} />
-          </Tooltip>
-        </div>
-        <Modal
-          title="Invitaciones"
-          open={isModalOpen}
-          onCancel={handleCancel}
-          footer={null}
-          width={1000}
-        >
-          <div className="tabla">
-            <Table
-              columns={filteredColumns}
-              dataSource={datosFiltrados}
-              scroll={{ x: "max-content", y: 600 }}
-            />
-          </div>
-        </Modal>
+      <MetricasDetalle data={datosFiltrados} filteredColumns={filteredColumns} type='invitaciones'/>
+      <MetricasDetalle data={datosFiltradoCon} filteredColumns={columnsConexionesFiltered} type='conexiones' />
+      <MetricasDetalle data={datosFiltradosMes} filteredColumns={filteredColumns} type='mensajes'/>
+      </div>
+      <div>
+        <TreeMapComponent data={datosFiltradoCon}/>
       </div>
     </>
   );

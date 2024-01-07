@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Column } from '@ant-design/plots';
+import { Empty } from "antd";
 
 
-export default function Barra({ data }) {
+export default function Barra({ data, type }) {
   const [graficoData, setGraficoData] = useState([]);
+  
   useEffect(() => {
-    if (!data || !data) {
+    if (!data || data.length === 0) {
       setGraficoData([]);
       return;
     }
 
+    let conteoCampo = '';
+    if (type === 'invitaciones') {
+      conteoCampo = 'Fecha'; 
+    } else if (type === 'conexiones') {
+      conteoCampo = 'Connected On'; 
+    }
+
     const conteoPorFecha = data.reduce((contador, elemento) => {
-      const fecha = elemento.Fecha;
+      const fecha = elemento[conteoCampo];
       if (!contador[fecha]) {
         contador[fecha] = 1;
       } else {
@@ -22,21 +31,20 @@ export default function Barra({ data }) {
 
     const datosGrafico = Object.keys(conteoPorFecha).map((fecha) => ({
       fecha: fecha,
-      invitaciones: conteoPorFecha[fecha],
+      [type]: conteoPorFecha[fecha],
     }));
     
-    datosGrafico.reverse();
-
-
     setGraficoData(datosGrafico);
-  }, [data]);
+  }, [data, type]);
 
-  
+  if (!data || data.length === 0) {
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  }
 
   const config = {
     data: graficoData,
     xField: 'fecha',
-    yField: 'invitaciones',
+    yField: type,
     label: {
       style: {
         fill: '#FFFFFF',
@@ -61,5 +69,6 @@ export default function Barra({ data }) {
     },
   };
 
-  return <Column {...config}/>;
+  return <Column {...config} />;
 }
+

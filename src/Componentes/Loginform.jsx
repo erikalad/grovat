@@ -8,6 +8,8 @@ const LoginForm = () => {
   const users = [
     { username: "lourdesaraoz", password: "grovat2024!" },
     { username: "lucasdeleon", password: "grovat2024!" },
+    { username: "santiagogoux", password: "grovat2024!" },
+    { username: "tomasmarcilese", password: "grovat2024!" },
     { username: "admin", password: "1234" },
   ];
 

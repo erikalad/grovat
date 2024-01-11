@@ -67,6 +67,12 @@ export default function Barra({ data, type }) {
         alias: 'Cantidad',
       },
     },
+    animation: {
+      appear: {
+        animation: 'path-in',
+        duration: 5000,
+      },
+    },
   };
 
   return <Column {...config} />;

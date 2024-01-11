@@ -17,7 +17,7 @@ export default function Datos() {
   const conexionesNumArchivosCargados = conexionesData ? JSON.parse(conexionesData).length : 0;
   const mensajesnumArchivosCargados = mensajesData ? JSON.parse(mensajesData).length : 0;
 
-
+  const moment = require('moment');
 
   useEffect(() => {
     if (showSuccessMessage,showSuccessMessageCon,showSuccessMessageMes) {
@@ -101,7 +101,6 @@ export default function Datos() {
     });
   }
 
-  const moment = require('moment');
 
   function parsearCSVConexiones(archivo) {
     return new Promise((resolve, reject) => {

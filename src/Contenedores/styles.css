@@ -80,12 +80,17 @@ box-shadow: 2px 4px 5px -2px rgba(182, 182, 182, 0.75);
   }
 
   .contenedor-estadisticas-barra{
+    display: block;
     width: 100%;
   }
 
 .barra-button{
   width: 100%;
   
+}
+
+.form-login{
+  margin-top: 50%;
 }
   
 }
@@ -104,3 +109,10 @@ background-color: #25272E;
 .boton-login:hover{
   background-color: #818181 !important;
   }
+
+
+.subtitulo-carta{
+    font-weight: 200;
+    color:rgb(0, 0, 0);
+    margin-bottom: 1rem;
+}

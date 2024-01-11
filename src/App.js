@@ -3,6 +3,9 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import Menu from "./Componentes/Menu"
 import Login from "./Contenedores/Login";
+import esES from 'antd/es/locale/es_ES'; // Importar el paquete de idioma español
+import { ConfigProvider } from "antd";
+
 
 function App() {
 
@@ -11,12 +14,9 @@ function App() {
     return isLoggedIn ? element : <Navigate to="/" />;
   };
 
-  useEffect(() => {
-    localStorage.removeItem("invitacionesData");
-  }, []);
-
-
   return (
+    <ConfigProvider locale={esES}>
+
 <div className="App">
       <Routes>
         <Route path="/" element={<Login />} />
@@ -30,6 +30,7 @@ function App() {
         />
       </Routes>
     </div>
+    </ConfigProvider>
   );
 }
 

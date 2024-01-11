@@ -30,6 +30,29 @@ const MetricasDetalle = ({ data, filteredColumns, type }) => {
     });
   };
 
+  const infoCon = () => {
+    Modal.info({
+      title: "Mensaje importante",
+      content: (
+        <div>
+        </div>
+      ),
+      onOk() {},
+    });
+  };
+
+  const infoMen = () => {
+    Modal.info({
+      title: "Mensaje importante",
+      content: (
+        <div>
+
+        </div>
+      ),
+      onOk() {},
+    });
+  };
+
   return (
     <>
       <div className="barra-button carta">
@@ -45,12 +68,19 @@ const MetricasDetalle = ({ data, filteredColumns, type }) => {
             onClick={showModal}
             shape="circle"
             icon={<BsTable />}
-            style={{ marginRight: "1rem" }}
+            style={{ marginRight: "1rem", marginTop: '1rem'}}
           ></Button>
         </Tooltip>
         <Tooltip title="Importante">
+        {type === 'invitaciones' ?
           <Button onClick={info} shape="circle" icon={<BsInfo />} />
+          : type === 'conexiones' ?
+          <Button onClick={infoCon} shape="circle" icon={<BsInfo />} />
+          : 
+          <Button onClick={infoMen} shape="circle" icon={<BsInfo />} />
+         }
         </Tooltip>
+        
       </div>
       <Modal
         title="Invitaciones"

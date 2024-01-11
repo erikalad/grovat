@@ -1,5 +1,6 @@
 import React from 'react';
 import { Line } from '@ant-design/plots';
+import { Empty } from 'antd';
 
 export default function Linea({ data }) {
   const connectionsByDate = {};
@@ -17,25 +18,34 @@ export default function Linea({ data }) {
 
   // Formatear los datos para el gráfico de línea
   const formattedData = Object.keys(connectionsByDate).map(date => ({
-    Date: date,
-    scales: connectionsByDate[date],
+    Fecha: date,
+    Conexiones: connectionsByDate[date],
   }));
 
   // Ordenar los datos por fecha
-  formattedData.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+  formattedData.sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha));
 
-  // Configuración del gráfico de línea
   const config = {
     data: formattedData,
     padding: 'auto',
-    xField: 'Date',
-    yField: 'scales',
-    xAxis: {
-      // type: 'timeCat',
-      tickCount: 5,
+    xField: 'Fecha',
+    yField: 'Conexiones',
+    legend: {
+      position: 'top',
     },
     smooth: true,
+    // @TODO 后续会换一种动画方式
+    animation: {
+      appear: {
+        animation: 'path-in',
+        duration: 5000,
+      },
+    },
   };
+
+  if (!data || data.length === 0) {
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  }
 
   return <Line {...config} />;
 }

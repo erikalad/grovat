@@ -16,7 +16,6 @@ export default function Metricas() {
   const cantArchivos = archivos.length
   const conexionesString = localStorage.getItem("conexionesData");
   const archivosConexiones = conexionesString ? JSON.parse(conexionesString) : [];
-  const cantConex = archivosConexiones.length
   const mensajesString = localStorage.getItem("mensajesData");
   const archivosMensajes = mensajesString ? JSON.parse(mensajesString) : [];
   const cantMens = archivosMensajes.length
@@ -76,32 +75,38 @@ export default function Metricas() {
   };
 
   const filterByMonthConexiones = () => {
-    const mesActual = new Date().getMonth() + 1;
-    const datosMesActual = dataCon?.datos.filter((item) => {
+    const fechaActual = new Date();
+    const mesActual = fechaActual.getMonth() + 1;
+    
+    const datosMesYAnioActual = dataCon?.datos.filter((item) => {
       if (item && item["Connected On"]) {
-        const [day, month] = item["Connected On"].split("/").map(Number);
-        return month === mesActual;
+        const [day, month, year] = item["Connected On"].split("/").map(Number);
+        return month === mesActual && year === 2024; // Filtrar por el año 2024
       }
       return false;
     });
-
-    setDatosFiltradosCon(datosMesActual || []);
+  
+    setDatosFiltradosCon(datosMesYAnioActual || []);
   };
+  
 
 
   
   const filterByMonthMensajes = () => {
-    const mesActual = new Date().getMonth() + 1;
-    const datosMesActual = dataMes?.datos.filter((item) => {
+    const fechaActual = new Date();
+    const mesActual = fechaActual.getMonth() + 1;
+    
+    const datosMesYAnioActual = dataMes?.datos.filter((item) => {
       if (item && item.DATE.DATE) {
-        const [day, month] = item.DATE.DATE.split("/").map(Number);
-        return month === mesActual;
+        const [day, month, year] = item.DATE.DATE.split("/").map(Number);
+        return month === mesActual && year === 2024; // Filtrar por el año 2024
       }
       return false;
     });
-    setDatosFiltradosMes(datosMesActual || []);
+  
+    setDatosFiltradosMes(datosMesYAnioActual || []);
   };
-
+  
   useEffect(() => {
     if (Object.keys(data).length !== 0) {
       filterByMonth();
@@ -115,18 +120,21 @@ export default function Metricas() {
     
     }, []);
 
-  const filterByMonth = () => {
-    const mesActual = new Date().getMonth() + 1;
-    const datosMesActual = data?.datos.filter((item) => {
-      if (item && item.Fecha) {
-        const [day, month] = item.Fecha.split("/").map(Number);
-        return month === mesActual;
-      }
-      return false;
-    });
-    setDatosFiltrados(datosMesActual || []);
-  };
-
+    const filterByMonth = () => {
+      const fechaActual = new Date();
+      const mesActual = fechaActual.getMonth() + 1;
+      
+      const datosMesYAnioActual = data?.datos.filter((item) => {
+        if (item && item.Fecha) {
+          const [day, month, year] = item.Fecha.split("/").map(Number);
+          return month === mesActual && year === 24; // Filtrar por el año 2024
+        }
+        return false;
+      });
+    
+      setDatosFiltrados(datosMesYAnioActual || []);
+    };
+    
   const filterByDate = (selectedDates) => {
     if (!selectedDates || selectedDates.length !== 2) {
       setDatosFiltrados(data?.datos || []);
@@ -237,6 +245,7 @@ export default function Metricas() {
       // Columna de nombre completo
       columnConfig = {
         title: 'Name',
+        width: '5%',
         dataIndex: 'Name',
         key: 'Name',
         render: (_, record) => `${record['First Name']} ${record['Last Name']}`,
@@ -246,6 +255,7 @@ export default function Metricas() {
       columnConfig = {
         title: 'Connected On',
         dataIndex: 'Connected On',
+        width: '5%',
         key: 'Connected On',
         render: (date) => {
           const [day, month, year] = date.split('/');
@@ -253,14 +263,12 @@ export default function Metricas() {
         },
       };
     } else if (clave === 'Position' || clave === 'URL') {
-      // Columnas restantes excepto Company
-      if (clave !== 'Company') {
         columnConfig = {
           title: clave,
           dataIndex: clave,
+          width: '5%',
           key: `columna_${index}`,
         };
-      }
     }
   
     return columnConfig;
@@ -270,7 +278,7 @@ export default function Metricas() {
     index === self.findIndex((c) => c.dataIndex === column.dataIndex) && column.title
   );
   
-  
+  const mesesFiltrados = obtenerMesesFiltrados(); 
 
 
 
@@ -289,12 +297,12 @@ export default function Metricas() {
         </div>
       </Divider>
       <div className="statidistics-progress">
-        <Estadisticas className="statidistics" data={datosFiltrados} cantArchivos={cantArchivos} type='invitaciones'/>
-        <Progreso data={datosFiltrados} />
+        <Estadisticas className="statidistics" data={datosFiltrados} cantArchivos={cantArchivos} type='invitaciones'  mesesFiltrados={mesesFiltrados}/>
+        <Progreso data={datosFiltrados} mesesFiltrados={mesesFiltrados} cantArchivos={cantArchivos}/>
         <EstadisticasConexiones className="statidistics" data={datosFiltradoCon}/>
         <ProgresoConexiones data={datosFiltradoCon} invitaciones={datosFiltrados}/>
-        <Estadisticas className="statidistics" data={datosFiltradosMes} cantArchivos={cantMens} type='mensajes'/>
-        <Progreso data={datosFiltradosMes} />
+        <Estadisticas className="statidistics" data={datosFiltradosMes} cantArchivos={cantMens} type='mensajes' mesesFiltrados={mesesFiltrados}/>
+        <Progreso data={datosFiltradosMes} mesesFiltrados={mesesFiltrados} cantArchivos={cantMens}/>
       </div>
       <div className="contenedor-estadisticas-barra">
       <MetricasDetalle data={datosFiltrados} filteredColumns={filteredColumns} type='invitaciones'/>

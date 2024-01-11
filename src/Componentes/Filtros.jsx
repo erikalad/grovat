@@ -1,13 +1,33 @@
-import React from "react";
-import { Collapse, DatePicker } from "antd";
+import React, { Fragment, useState } from "react";
+import { Button, Collapse, DatePicker, Modal, Table } from "antd";
 import locale from "antd/lib/date-picker/locale/es_ES";
 import dayjs from 'dayjs';
 import 'dayjs/locale/es'; 
+import './styles.css'
+import TransferCualificados from "./Transfer";
 
 const { Panel } = Collapse;
 const { RangePicker } = DatePicker;
 
 export default function Filtros({ onFilterByDate, data, recibirMes }) {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const conexiones = JSON.parse(localStorage.getItem("conexionesData"))
+  const positions = [...new Set(conexiones[0]?.datos.map((dato) => dato.Position))];
+  const dataTabla = positions.map((position, index) => ({ position, key: index }));
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+
   dayjs.locale('es'); 
   const firstDayOfMonth = dayjs().startOf('month');
   const today = dayjs();
@@ -24,7 +44,8 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
   };
 
   return (
-    <Collapse accordion>
+    <Fragment>
+    <Collapse accordion defaultActiveKey={1}>
       <Panel header="Filtros" key="1">
         <p>Selecciona un rango de fechas:</p>
         {Object.keys(data).length === 0 ? (
@@ -36,7 +57,21 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
             defaultValue={[firstDayOfMonth, today]}
           />
         )}
+        <Button className="button-cualificados" onClick={showModal}>Puestos cualificados</Button>
       </Panel>
     </Collapse>
+
+          <Modal
+        title="Puestos cualificados"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        width={1000}
+      >
+        <div className="transfer">
+            <TransferCualificados data={dataTabla}/>
+        </div>
+      </Modal>
+      </Fragment>
   );
 }

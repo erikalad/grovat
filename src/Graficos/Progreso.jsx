@@ -6,9 +6,11 @@ const twoColors = {
   '100%': '#87d068',
 };
 
-const Progreso = ({data}) => {
-  const totalObjetivo = 800;
+const Progreso = ({data,mesesFiltrados,cantArchivos}) => {
+  const mesesSeparados = mesesFiltrados?.split(',').map(mes => mes.trim());
+  const totalObjetivo = 800 * mesesSeparados?.length * cantArchivos;
   const porcentaje = Math.min((data.length / totalObjetivo) * 100, 100).toFixed(0);
+
 
   return(
   <div

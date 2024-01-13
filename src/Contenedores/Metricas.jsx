@@ -32,6 +32,8 @@ export default function Metricas() {
   const [datosFiltradoCon, setDatosFiltradosCon] = useState(dataCon.datos || []);
   const [datosFiltradosMes, setDatosFiltradosMes] = useState(dataMes.datos || []);
 
+  const [actualizacionCualificados,setActualizacionCualificados] = useState(false)
+
   const [mesEnCurso, setMesEnCurso] = useState("");
 
   const obtenerMesesFiltrados = () => {
@@ -281,6 +283,12 @@ export default function Metricas() {
   const mesesFiltrados = obtenerMesesFiltrados(); 
 
 
+  function actualizacionCuaificados(){
+    setActualizacionCualificados(!actualizacionCualificados)
+  }
+
+  console.log(actualizacionCualificados)
+
 
   return (
     <>
@@ -288,6 +296,7 @@ export default function Metricas() {
         onFilterByDate={filterByDate}
         data={data}
         recibirMes={recibirMes}
+        actualizacionCuaificados={actualizacionCuaificados}
       />
       <Divider orientation="left">
         <div className="mes">
@@ -306,7 +315,7 @@ export default function Metricas() {
       </div>
       <div className="contenedor-estadisticas-barra">
       <MetricasDetalle data={datosFiltrados} filteredColumns={filteredColumns} type='invitaciones'/>
-      <MetricasDetalle data={datosFiltradoCon} filteredColumns={columnsConexionesFiltered} type='conexiones' />
+      <MetricasDetalle data={datosFiltradoCon} filteredColumns={columnsConexionesFiltered} type='conexiones' actualizacionCualificados={actualizacionCualificados}/>
       <MetricasDetalle data={datosFiltradosMes} filteredColumns={filteredColumns} type='mensajes'/>
       </div>
       <div>

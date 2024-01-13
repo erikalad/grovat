@@ -6,7 +6,6 @@ import Login from "./Contenedores/Login";
 import esES from 'antd/es/locale/es_ES'; // Importar el paquete de idioma español
 import { ConfigProvider } from "antd";
 
-
 function App() {
 
   const ProtectedRoute = ({ element }) => {

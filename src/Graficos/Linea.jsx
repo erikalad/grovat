@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Line } from '@ant-design/plots';
 import { Empty } from 'antd';
 
-export default function Linea({ data }) {
+export default function Linea({ data,actualizacionCualificados }) {
   const [lineChartData, setLineChartData] = useState([]);
 
   const cualificadosData = localStorage.getItem('cualificadosData');
@@ -48,27 +48,8 @@ export default function Linea({ data }) {
 
   useEffect(() => {
     updateChartData();
-  }, [data]);
-
-
-  useEffect(()=>{
-      // Obtener el valor almacenado en el localStorage
-const conexionesData = localStorage.getItem('conexionesData');
-
-// Convertir el valor a un array de objetos JavaScript
-const conexionesDataArr = JSON.parse(conexionesData);
-
-// Filtrar los objetos cuya fecha de conexión es el día 10
-const conexionesDia10 = conexionesDataArr[0].datos.filter(obj => {
-    return obj['Connected On'] === '10/01/2024'; // Ajusta el formato de la fecha según sea necesario
-});
-// Imprimir en la consola los puestos de los objetos del día 10
-conexionesDia10.forEach(obj => {
-    console.log('Puesto:', obj.Position);
-});
-
-  },[])
-
+  }, [data, actualizacionCualificados]);
+  
 
 
   const config = {

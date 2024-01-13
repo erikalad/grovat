@@ -6,24 +6,24 @@ const twoColors = {
   '100%': '#87d068',
 };
 
-const Progreso = ({data,mesesFiltrados,cantArchivos}) => {
+const Progreso = ({ data, mesesFiltrados, cantArchivos }) => {
   const mesesSeparados = mesesFiltrados?.split(',').map(mes => mes.trim());
-  const totalObjetivo = 800 * mesesSeparados?.length * cantArchivos;
-  const porcentaje = Math.min((data.length / totalObjetivo) * 100, 100).toFixed(0);
+  const totalObjetivo = 800 * (mesesSeparados?.length || 0) * cantArchivos; // Manejar el caso en que mesesSeparados sea undefined
+  const porcentaje = isFinite(totalObjetivo) ? Math.min((data.length / totalObjetivo) * 100, 100).toFixed(0) : 0;
 
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 16,
+      }}
+    >
+      <Space wrap>
+        <Progress type="dashboard" percent={parseInt(porcentaje)} strokeColor={twoColors} />
+      </Space>
+    </div>
+  );
+};
 
-  return(
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      rowGap: 16,
-    }}
-  >
-    <Space wrap>
-      <Progress type="dashboard" percent={porcentaje} strokeColor={twoColors} />
-    </Space>
-  </div>
-  )
-  };
 export default Progreso;

@@ -9,7 +9,7 @@ import TransferCualificados from "./Transfer";
 const { Panel } = Collapse;
 const { RangePicker } = DatePicker;
 
-export default function Filtros({ onFilterByDate, data, recibirMes }) {
+export default function Filtros({ onFilterByDate, data, recibirMes, actualizacionCuaificados }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const conexiones = JSON.parse(localStorage.getItem("conexionesData"))
@@ -17,6 +17,7 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
   const dataTabla = positions.map((position, index) => ({ position, key: index }));
   const handleOk = () => {
     setIsModalOpen(false);
+    actualizacionCuaificados()
   };
 
   const showModal = () => {
@@ -84,7 +85,7 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
       width={1000}
     >
       <div className="transfer">
-        <TransferCualificados data={prepareDataForTransfer()} />
+        <TransferCualificados data={prepareDataForTransfer()}/>
       </div>
     </Modal>
   </Fragment>

@@ -7,10 +7,10 @@ const twoColors = {
 };
 
 const ProgresoConexiones = ({ data, invitaciones }) => {
-  const totalInvitaciones = invitaciones.length; 
-  const totalConexiones = data.length; 
+  const totalInvitaciones = invitaciones.length || 1; // Manejar el caso en que invitaciones.length sea 0
+  const totalConexiones = data.length;
 
-  const porcentaje = Math.min((totalConexiones / totalInvitaciones) * 100, 100).toFixed(0);
+  const porcentaje = isFinite(totalInvitaciones) ? Math.min((totalConexiones / totalInvitaciones) * 100, 100).toFixed(0) : 0;
 
   return (
     <div
@@ -21,7 +21,7 @@ const ProgresoConexiones = ({ data, invitaciones }) => {
       }}
     >
       <Space wrap>
-        <Progress type="dashboard" percent={porcentaje} strokeColor={twoColors} />
+        <Progress type="dashboard" percent={parseInt(porcentaje)} strokeColor={twoColors} />
       </Space>
     </div>
   );

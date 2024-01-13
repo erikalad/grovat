@@ -5,7 +5,7 @@ import { BsTable } from "react-icons/bs";
 import { BsInfo } from "react-icons/bs";
 import Linea from "../Graficos/Linea";
 
-const MetricasDetalle = ({ data, filteredColumns, type }) => {
+const MetricasDetalle = ({ data, filteredColumns, type, actualizacionCualificados }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const showModal = () => {
@@ -63,7 +63,7 @@ const MetricasDetalle = ({ data, filteredColumns, type }) => {
         {type === "invitaciones" ? (
           <Barra data={data} type={type} />
         ) : (
-          <Linea data={data} type={type} />
+          <Linea data={data} type={type} actualizacionCualificados={actualizacionCualificados}/>
         )}
         <Tooltip title="Ver detalle de los datos">
           <Button

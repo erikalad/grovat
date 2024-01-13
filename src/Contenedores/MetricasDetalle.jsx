@@ -61,7 +61,7 @@ const MetricasDetalle = ({ data, filteredColumns, type, actualizacionCualificado
     <>
       <div className="barra-button carta">
         {type === "invitaciones" ? (
-          <Barra data={data} type={type} />
+          <Barra data={data} type={type} actualizacionCualificados={actualizacionCualificados}/>
         ) : (
           <Linea data={data} type={type} actualizacionCualificados={actualizacionCualificados}/>
         )}

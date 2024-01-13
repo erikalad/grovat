@@ -2,29 +2,52 @@ import React, { useState, useEffect } from 'react';
 import { Column } from '@ant-design/plots';
 import { Empty } from 'antd';
 
-export default function Barra({ data }) {
+export default function Barra({ data, actualizacionCualificados }) {
   const [graficoData, setGraficoData] = useState([]);
+  const [cualificadosData, setCualificadosData] = useState([]);
 
   useEffect(() => {
-    if (!data || data.length === 0) {
+    // Cargar cualificadosData desde el localStorage al montar el componente
+    const storedCualificadosData = JSON.parse(localStorage.getItem('cualificadosData')) || [];
+    setCualificadosData(storedCualificadosData);
+
+    if (!data || data.length === 0 || !storedCualificadosData) {
       setGraficoData([]);
       return;
     }
 
-    const conteoPorFecha = data.reduce((contador, elemento) => {
+    const datosConCualificados = data.map((elemento) => {
+      const encontrado = storedCualificadosData.find(
+        (cualificado) => cualificado.name === elemento.To
+      );
+
+      if (encontrado) {
+        return {
+          ...elemento,
+          position: encontrado.position,
+          cualificados: encontrado.cualificados,
+        };
+      } else {
+        return elemento;
+      }
+    });
+
+    const conteoPorFecha = datosConCualificados.reduce((contador, elemento) => {
       const fecha = elemento.Fecha;
 
-      // Conteo total de objetos para la fecha actual
       if (!contador[fecha]) {
         contador[fecha] = { fecha, type: 'invitaciones', value: 1 };
       } else {
         contador[fecha].value += 1;
       }
 
-      // Conteo de objetos con propiedad position para la fecha actual
-      if (elemento.position) {
+      if (elemento.cualificados) {
         if (!contador[fecha + '-cualificados']) {
-          contador[fecha + '-cualificados'] = { fecha, type: 'cualificados', value: 1 };
+          contador[fecha + '-cualificados'] = {
+            fecha,
+            type: 'cualificados',
+            value: 1,
+          };
         } else {
           contador[fecha + '-cualificados'].value += 1;
         }
@@ -36,9 +59,10 @@ export default function Barra({ data }) {
     const datosGrafico = Object.values(conteoPorFecha);
 
     setGraficoData(datosGrafico);
-  }, [data]);
 
-  if (!data || data.length === 0) {
+  }, [data, actualizacionCualificados]);
+
+  if (!data || data.length === 0 || !cualificadosData) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   }
 
@@ -48,7 +72,6 @@ export default function Barra({ data }) {
     yField: 'value',
     seriesField: 'type',
     isGroup: true,
-
   };
 
   return <Column {...config} />;

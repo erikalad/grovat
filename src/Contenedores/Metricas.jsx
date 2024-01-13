@@ -314,7 +314,7 @@ export default function Metricas() {
         <Progreso data={datosFiltradosMes} mesesFiltrados={mesesFiltrados} cantArchivos={cantMens}/>
       </div>
       <div className="contenedor-estadisticas-barra">
-      <MetricasDetalle data={datosFiltrados} filteredColumns={filteredColumns} type='invitaciones'/>
+      <MetricasDetalle data={datosFiltrados} filteredColumns={filteredColumns} type='invitaciones' actualizacionCualificados={actualizacionCualificados}/>
       <MetricasDetalle data={datosFiltradoCon} filteredColumns={columnsConexionesFiltered} type='conexiones' actualizacionCualificados={actualizacionCualificados}/>
       <MetricasDetalle data={datosFiltradosMes} filteredColumns={filteredColumns} type='mensajes'/>
       </div>

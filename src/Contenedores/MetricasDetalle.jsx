@@ -35,6 +35,14 @@ const MetricasDetalle = ({ data, filteredColumns, type }) => {
       title: "Mensaje importante",
       content: (
         <div>
+          Esta visualización presenta el recuento total de conexiones en la
+          cuenta, así como las conexiones asociadas a puestos cualificados. Es
+          importante tener en cuenta que la información sobre los puestos en
+          LinkedIn es proporcionada por los usuarios y puede no estar siempre
+          disponible. En caso de observar discrepancias entre los números de
+          conexiones totales y las conexiones cualificadas, especialmente al
+          seleccionar todos los puestos, es probable que se deba a la falta de
+          información específica en algunos perfiles.
         </div>
       ),
       onOk() {},
@@ -44,11 +52,7 @@ const MetricasDetalle = ({ data, filteredColumns, type }) => {
   const infoMen = () => {
     Modal.info({
       title: "Mensaje importante",
-      content: (
-        <div>
-
-        </div>
-      ),
+      content: <div></div>,
       onOk() {},
     });
   };
@@ -56,31 +60,28 @@ const MetricasDetalle = ({ data, filteredColumns, type }) => {
   return (
     <>
       <div className="barra-button carta">
-        {type === 'invitaciones' ?
-                <Barra data={data} type={type}/>
-                :
-                <Linea data={data} type={type}/>
-                
-               
-        }
+        {type === "invitaciones" ? (
+          <Barra data={data} type={type} />
+        ) : (
+          <Linea data={data} type={type} />
+        )}
         <Tooltip title="Ver detalle de los datos">
           <Button
             onClick={showModal}
             shape="circle"
             icon={<BsTable />}
-            style={{ marginRight: "1rem", marginTop: '1rem'}}
+            style={{ marginRight: "1rem", marginTop: "1rem" }}
           ></Button>
         </Tooltip>
         <Tooltip title="Importante">
-        {type === 'invitaciones' ?
-          <Button onClick={info} shape="circle" icon={<BsInfo />} />
-          : type === 'conexiones' ?
-          <Button onClick={infoCon} shape="circle" icon={<BsInfo />} />
-          : 
-          <Button onClick={infoMen} shape="circle" icon={<BsInfo />} />
-         }
+          {type === "invitaciones" ? (
+            <Button onClick={info} shape="circle" icon={<BsInfo />} />
+          ) : type === "conexiones" ? (
+            <Button onClick={infoCon} shape="circle" icon={<BsInfo />} />
+          ) : (
+            <Button onClick={infoMen} shape="circle" icon={<BsInfo />} />
+          )}
         </Tooltip>
-        
       </div>
       <Modal
         title="Invitaciones"

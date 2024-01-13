@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Transfer } from 'antd';
+import { Transfer } from 'antd';
 
 export default function TransferCualificados({ data }) {
   const [mockData, setMockData] = useState([]);
@@ -18,10 +18,29 @@ export default function TransferCualificados({ data }) {
 
   
   useEffect(() => {
+    setCualificados(storedPuestos.cualificados);
+    setNoCualificados(storedPuestos.noCualificados);
+  
+    const tempMockData = positions.map((position, index) => ({
+      key: index.toString(),
+      title: position,
+      chosen: false,
+    }));
+  
+    setMockData(tempMockData);
+    
+    // Establecer las targetKeys basándose en los puestos cualificados
+    const targetKeys = tempMockData
+      .filter((item) => storedPuestos.cualificados.includes(item.title))
+      .map((item) => item.key);
+    setTargetKeys(targetKeys);
+  }, [data]);
+  
+  useEffect(() => {
     // Iterar sobre los elementos de data
     const newData = data.map(item => {
       // Verificar si la posición está en el array de cualificados
-      const estaCualificado = cualificadosArray.includes(item.position);
+      const estaCualificado = cualificados.includes(item.position);
   
       // Agregar la propiedad cualificados al objeto
       return {
@@ -30,8 +49,8 @@ export default function TransferCualificados({ data }) {
       };
     });
     setDataCualificada(newData);
-  }, [data, cualificadosArray]);
-
+  }, [data, cualificados]);
+  
 
 
   useEffect(() => {
@@ -72,6 +91,7 @@ export default function TransferCualificados({ data }) {
       setNoCualificados(noCualificados.filter((item) => !cualificadosKeys.includes(item)));
     }
   };
+
 
   return (
     <div>

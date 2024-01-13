@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Button, Collapse, DatePicker, Modal, Table } from "antd";
+import { Button, Collapse, DatePicker, Modal } from "antd";
 import locale from "antd/lib/date-picker/locale/es_ES";
 import dayjs from 'dayjs';
 import 'dayjs/locale/es'; 
@@ -84,7 +84,6 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
       width={1000}
     >
       <div className="transfer">
-        {/* Pasa los datos modificados al componente TransferCualificados */}
         <TransferCualificados data={prepareDataForTransfer()} />
       </div>
     </Modal>

@@ -9,9 +9,41 @@ export default function TransferCualificados({ data }) {
   );
   const [noCualificados, setNoCualificados] = useState(positions);
   const [cualificados, setCualificados] = useState([]);
-  console.log(noCualificados,cualificados)
+  const [dataCualificada, setDataCualificada] = useState([]);
+
+
+  // Obtener datos de localStorage
+  const storedPuestos = JSON.parse(localStorage.getItem('puestos')) || { cualificados: [], noCualificados: positions };
+  const cualificadosArray = storedPuestos.cualificados;
+
+  
+  useEffect(() => {
+    // Iterar sobre los elementos de data
+    const newData = data.map(item => {
+      // Verificar si la posición está en el array de cualificados
+      const estaCualificado = cualificadosArray.includes(item.position);
+  
+      // Agregar la propiedad cualificados al objeto
+      return {
+        ...item,
+        cualificados: estaCualificado,
+      };
+    });
+    setDataCualificada(newData);
+  }, [data, cualificadosArray]);
+
+
 
   useEffect(() => {
+    // Guardar los datos en localStorage cuando cambian
+    localStorage.setItem('puestos', JSON.stringify({ cualificados, noCualificados }));
+    localStorage.setItem('cualificadosData', JSON.stringify(dataCualificada));
+  }, [cualificados, noCualificados, dataCualificada]);
+
+  useEffect(() => {
+    setCualificados(storedPuestos.cualificados);
+    setNoCualificados(storedPuestos.noCualificados);
+
     const tempMockData = positions.map((position, index) => ({
       key: index.toString(),
       title: position,
@@ -41,24 +73,9 @@ export default function TransferCualificados({ data }) {
     }
   };
 
-  const renderFooter = (_, { direction }) => {
-    return (
-      <Button
-        size="small"
-        style={{
-          float: direction === 'left' ? 'left' : 'right',
-          margin: 5,
-        }}
-        onClick={() => setTargetKeys([])}
-      >
-        Limpiar filtros
-      </Button>
-    );
-  };
-
   return (
     <div>
-      <Transfer
+    <Transfer
         dataSource={mockData}
         showSearch
         pagination
@@ -70,7 +87,6 @@ export default function TransferCualificados({ data }) {
         targetKeys={targetKeys}
         onChange={handleChange}
         render={(item) => item.title}
-        footer={renderFooter}
         titles={['No cualificados', 'Cualificados']}
       />
     </div>

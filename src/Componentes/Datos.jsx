@@ -12,10 +12,36 @@ export default function Datos() {
   const invitacionesData = localStorage.getItem("invitacionesData");
   const conexionesData = localStorage.getItem("conexionesData");
   const mensajesData = localStorage.getItem("mensajesData");
-
+  
   const numArchivosCargados = invitacionesData ? JSON.parse(invitacionesData).length : 0;
   const conexionesNumArchivosCargados = conexionesData ? JSON.parse(conexionesData).length : 0;
   const mensajesnumArchivosCargados = mensajesData ? JSON.parse(mensajesData).length : 0;
+  
+  function actualizarPosiciones() {
+    let invitaciones = localStorage.getItem("invitacionesData");
+    invitaciones = invitaciones ? JSON.parse(invitaciones) : [];
+    const cualificadosString = localStorage.getItem("cualificadosData");
+    const cualificados = cualificadosString ? JSON.parse(cualificadosString) : [];
+  
+    if (invitaciones && cualificados) {
+      invitaciones.forEach((invitacion) => {
+        invitacion.datos.forEach((dato) => {
+          const cualificado = cualificados.find((c) => c.name === dato.To);
+  
+          if (cualificado) {
+            dato.position = cualificado.position;
+          }
+        });
+      });
+  
+      localStorage.setItem("invitacionesData", JSON.stringify(invitaciones));
+    }
+  }
+  
+  actualizarPosiciones();
+  
+  
+
 
   const moment = require('moment');
 
@@ -36,7 +62,7 @@ export default function Datos() {
   };
 
   const handleCloseAlert = (id, archivo) => {
-    if(archivo === "invitacionesData"){
+    if (archivo === "invitacionesData") {
       const invitacionesString = localStorage.getItem("invitacionesData");
       let data = invitacionesString ? JSON.parse(invitacionesString) : [];
   
@@ -46,8 +72,8 @@ export default function Datos() {
   
       setShowSuccessMessage(true);
     }
-    
-    if(archivo === "conexionesData"){
+  
+    if (archivo === "conexionesData") {
       const invitacionesString = localStorage.getItem("conexionesData");
       let data = invitacionesString ? JSON.parse(invitacionesString) : [];
   
@@ -56,9 +82,12 @@ export default function Datos() {
       localStorage.setItem("conexionesData", JSON.stringify(newData));
   
       setShowSuccessMessageCon(true);
+  
+      // Borrar el localStorage de "puestos" cuando se elimina el archivo de conexiones
+      localStorage.removeItem("puestos");
     }
-
-    if(archivo === "mensajesData"){
+  
+    if (archivo === "mensajesData") {
       const invitacionesString = localStorage.getItem("mensajesData");
       let data = invitacionesString ? JSON.parse(invitacionesString) : [];
   
@@ -68,8 +97,8 @@ export default function Datos() {
   
       setShowSuccessMessageMes(true);
     }
-
   };
+  
 
   function parsearCSV(archivo) {
     return new Promise((resolve, reject) => {

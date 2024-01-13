@@ -1,40 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line } from '@ant-design/plots';
 import { Empty } from 'antd';
 
 export default function Linea({ data }) {
-  const connectionsByDate = {};
+  const [lineChartData, setLineChartData] = useState([]);
 
-  data.forEach(person => {
-    const connectedOn = person['Connected On'];
-    if (connectedOn) {
-      if (connectionsByDate[connectedOn]) {
-        connectionsByDate[connectedOn] += 1;
-      } else {
-        connectionsByDate[connectedOn] = 1;
-      }
+  useEffect(() => {
+    if (!data || data.length === 0) {
+      setLineChartData([]);
+      return;
     }
-  });
 
-  // Formatear los datos para el gráfico de línea
-  const formattedData = Object.keys(connectionsByDate).map(date => ({
-    Fecha: date,
-    Conexiones: connectionsByDate[date],
-  }));
+    const cualificadosData = localStorage.getItem('cualificadosData');
+    const cualificados = cualificadosData ? JSON.parse(cualificadosData) : [];
 
-  // Ordenar los datos por fecha
-  formattedData.sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha));
+    const chartData = data.map(item => {
+      const fecha = item['Connected On']; // Ajustar a la propiedad correcta de la fecha
+      const firstName = item['First Name'];
+      const lastName = item['Last Name'];
+      const name = `${firstName} ${lastName}`;
+
+      return {
+        fecha,
+        type: cualificados.find(cualificado => cualificado.name === name) ? 'Cualificado' : 'Conexiones',
+      };
+    });
+
+    // Agrupar y contar los valores por fecha y tipo
+    const groupedData = chartData.reduce((acc, item) => {
+      const key = `${item.fecha}_${item.type}`;
+      if (!acc[key]) {
+        acc[key] = { fecha: item.fecha, type: item.type, value: 0 };
+      }
+      acc[key].value += 1;
+      return acc;
+    }, {});
+
+    // Ajustar el valor de "Conexiones" para que sea al menos igual al de "Cualificado"
+    Object.values(groupedData).forEach(item => {
+      if (item.type === 'Cualificado') {
+        const conexionesKey = `${item.fecha}_Conexiones`;
+        if (!groupedData[conexionesKey]) {
+          groupedData[conexionesKey] = { fecha: item.fecha, type: 'Conexiones', value: 0 };
+        }
+        groupedData[conexionesKey].value = Math.max(groupedData[conexionesKey].value, item.value);
+      }
+    });
+
+    setLineChartData(Object.values(groupedData));
+  }, [data]);
 
   const config = {
-    data: formattedData,
-    padding: 'auto',
-    xField: 'Fecha',
-    yField: 'Conexiones',
+    data: lineChartData,
+    xField: 'fecha',
+    yField: 'value',
+    seriesField: 'type',
     legend: {
       position: 'top',
     },
     smooth: true,
-    // @TODO 后续会换一种动画方式
     animation: {
       appear: {
         animation: 'path-in',

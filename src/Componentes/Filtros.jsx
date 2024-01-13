@@ -27,7 +27,6 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
     setIsModalOpen(false);
   };
 
-
   dayjs.locale('es'); 
   const firstDayOfMonth = dayjs().startOf('month');
   const today = dayjs();
@@ -42,6 +41,22 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
     });
     onFilterByDate(formattedDates);
   };
+
+  const prepareDataForTransfer = () => {
+    const cualificadosData = dataTabla.map(item => {
+      const cualificadoInfo = conexiones[0]?.datos.find(dato => dato.Position === item.position);
+      if (cualificadoInfo) {
+        return {
+          ...item,
+          name: `${cualificadoInfo["First Name"]} ${cualificadoInfo["Last Name"]}`,
+        };
+      }
+      return item;
+    });
+
+    return cualificadosData;
+  };
+
 
   return (
     <Fragment>
@@ -61,17 +76,18 @@ export default function Filtros({ onFilterByDate, data, recibirMes }) {
       </Panel>
     </Collapse>
 
-          <Modal
-        title="Puestos cualificados"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        width={1000}
-      >
-        <div className="transfer">
-            <TransferCualificados data={dataTabla}/>
-        </div>
-      </Modal>
-      </Fragment>
+    <Modal
+      title="Puestos cualificados"
+      open={isModalOpen}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      width={1000}
+    >
+      <div className="transfer">
+        {/* Pasa los datos modificados al componente TransferCualificados */}
+        <TransferCualificados data={prepareDataForTransfer()} />
+      </div>
+    </Modal>
+  </Fragment>
   );
 }

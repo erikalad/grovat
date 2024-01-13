@@ -1,41 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Column } from '@ant-design/plots';
-import { Empty } from "antd";
+import { Empty } from 'antd';
 
-
-export default function Barra({ data, type }) {
+export default function Barra({ data }) {
   const [graficoData, setGraficoData] = useState([]);
-  
+
   useEffect(() => {
     if (!data || data.length === 0) {
       setGraficoData([]);
       return;
     }
 
-    let conteoCampo = '';
-    if (type === 'invitaciones') {
-      conteoCampo = 'Fecha'; 
-    } else if (type === 'conexiones') {
-      conteoCampo = 'Connected On'; 
-    }
-
     const conteoPorFecha = data.reduce((contador, elemento) => {
-      const fecha = elemento[conteoCampo];
+      const fecha = elemento.Fecha;
+
+      // Conteo total de objetos para la fecha actual
       if (!contador[fecha]) {
-        contador[fecha] = 1;
+        contador[fecha] = { fecha, type: 'invitaciones', value: 1 };
       } else {
-        contador[fecha] += 1;
+        contador[fecha].value += 1;
       }
+
+      // Conteo de objetos con propiedad position para la fecha actual
+      if (elemento.position) {
+        if (!contador[fecha + '-cualificados']) {
+          contador[fecha + '-cualificados'] = { fecha, type: 'cualificados', value: 1 };
+        } else {
+          contador[fecha + '-cualificados'].value += 1;
+        }
+      }
+
       return contador;
     }, {});
 
-    const datosGrafico = Object.keys(conteoPorFecha).map((fecha) => ({
-      fecha: fecha,
-      [type]: conteoPorFecha[fecha],
-    }));
-    
+    const datosGrafico = Object.values(conteoPorFecha);
+
     setGraficoData(datosGrafico);
-  }, [data, type]);
+  }, [data]);
 
   if (!data || data.length === 0) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
@@ -44,37 +45,11 @@ export default function Barra({ data, type }) {
   const config = {
     data: graficoData,
     xField: 'fecha',
-    yField: type,
-    label: {
-      style: {
-        fill: '#FFFFFF',
-        opacity: 0.6,
-      },
-    },
-    xAxis: {
-      label: {
-        autoHide: true,
-        autoRotate: false,
-      },
-      transpose: true,
-      position: 'bottom'
-    },
-    meta: {
-      type: {
-        alias: 'Fecha',
-      },
-      sales: {
-        alias: 'Cantidad',
-      },
-    },
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 5000,
-      },
-    },
+    yField: 'value',
+    seriesField: 'type',
+    isGroup: true,
+
   };
 
   return <Column {...config} />;
 }
-

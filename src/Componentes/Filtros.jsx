@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es'; 
 import './styles.css'
 import TransferCualificados from "./Transfer";
+import { useSelector } from "react-redux";
 
 const { Panel } = Collapse;
 const { RangePicker } = DatePicker;
@@ -12,7 +13,7 @@ const { RangePicker } = DatePicker;
 export default function Filtros({ onFilterByDate, data, recibirMes, actualizacionCuaificados }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const conexiones = JSON.parse(localStorage.getItem("conexionesData"))
+  const conexiones = useSelector((state) => state.conexionesData);
   const positions = [...new Set(conexiones[0]?.datos.map((dato) => dato.Position))];
   const dataTabla = positions.map((position, index) => ({ position, key: index }));
   const handleOk = () => {

@@ -84,7 +84,7 @@ const MetricasDetalle = ({ data, filteredColumns, type, actualizacionCualificado
         </Tooltip>
       </div>
       <Modal
-        title="Invitaciones"
+        title={type === "invitaciones" ? "Invitaciones" : type === "conexiones" ? "Conexiones" : "Mensajes"}  
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null}

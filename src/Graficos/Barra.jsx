@@ -36,7 +36,7 @@ export default function Barra({ data, actualizacionCualificados }) {
       const fecha = elemento.Fecha;
 
       if (!contador[fecha]) {
-        contador[fecha] = { fecha, type: 'invitaciones', value: 1 };
+        contador[fecha] = { fecha, type: 'Invitaciones', value: 1 };
       } else {
         contador[fecha].value += 1;
       }
@@ -45,7 +45,7 @@ export default function Barra({ data, actualizacionCualificados }) {
         if (!contador[fecha + '-cualificados']) {
           contador[fecha + '-cualificados'] = {
             fecha,
-            type: 'cualificados',
+            type: 'Cualificados',
             value: 1,
           };
         } else {

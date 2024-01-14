@@ -224,7 +224,16 @@ export default function Metricas() {
       onFilter: allowedColumns.includes(clave)
         ? (value, record) => record[clave] === value
         : null,
-      sorter: (a, b) => a[clave].length - b[clave].length,
+        sorter: (a, b) => {
+          const aValue = a[clave];
+          const bValue = b[clave];
+        
+          // Verificar si los valores son definidos antes de acceder a 'length'
+          const aLength = aValue ? aValue.length : 0;
+          const bLength = bValue ? bValue.length : 0;
+        
+          return aLength - bLength;
+        },
       sortDirections: ["descend"],
     };
   });
@@ -240,54 +249,68 @@ export default function Metricas() {
     (column) => !excludedColumns.includes(column.title)
   );
 
+
   const columnsConexiones = Object.keys(primerEntradaCon).map((clave, index) => {
     let columnConfig = {};
   
     if (clave === 'First Name' || clave === 'Last Name') {
-      // Columna de nombre completo
+  
       columnConfig = {
         title: 'Name',
         width: '5%',
         dataIndex: 'Name',
         key: 'Name',
         render: (_, record) => `${record['First Name']} ${record['Last Name']}`,
-      };
-    } else if (clave === 'Connected On') {
-      // Columna de fecha con el formato dd/mm/aaaa
-      columnConfig = {
-        title: 'Connected On',
-        dataIndex: 'Connected On',
-        width: '5%',
-        key: 'Connected On',
-        render: (date) => {
-          const [day, month, year] = date.split('/');
-          return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        sorter: (a, b) => {
+          const nameA = `${a['First Name']} ${a['Last Name']}`.toLowerCase();
+          const nameB = `${b['First Name']} ${b['Last Name']}`.toLowerCase();
+          return nameA.localeCompare(nameB);
         },
-      };
-    } else if (clave === 'Position' || clave === 'URL') {
-        columnConfig = {
-          title: clave,
-          dataIndex: clave,
-          width: '5%',
-          key: `columna_${index}`,
-        };
-    }
-  
-    return columnConfig;
-  });
-  
-  const columnsConexionesFiltered = columnsConexiones.filter((column, index, self) =>
-    index === self.findIndex((c) => c.dataIndex === column.dataIndex) && column.title
-  );
-  
+    };
+  } else if (clave === 'Connected On') {
+    // Columna de fecha con el formato dd/mm/aaaa
+    columnConfig = {
+      title: 'Connected On',
+      dataIndex: 'Connected On',
+      width: '5%',
+      key: 'Connected On',
+      render: (date) => {
+        const [day, month, year] = date.split('/');
+        return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+      },
+      sorter: (a, b) => new Date(a['Connected On']) - new Date(b['Connected On']),
+    };
+  } else if (clave === 'Position') {
+    columnConfig = {
+      title: 'Position',
+      dataIndex: 'Position',
+      width: '5%',
+      key: `columna_${index}`,
+      sorter: (a, b) => a.Position.localeCompare(b.Position),
+    };
+  } else if (clave === 'URL') {
+    columnConfig = {
+      title: 'URL',
+      dataIndex: 'URL',
+      width: '5%',
+      key: `columna_${index}`,
+      render: (text, record) => <a href={text} target="_blank" rel="noopener noreferrer">{text}</a>,
+    };
+  }
+
+  return columnConfig;
+});
+
+const columnsConexionesFiltered = columnsConexiones.filter((column, index, self) =>
+  index === self.findIndex((c) => c.dataIndex === column.dataIndex) && column.title
+);
+
   const mesesFiltrados = obtenerMesesFiltrados(); 
 
 
   function actualizacionCuaificados(){
     setActualizacionCualificados(!actualizacionCualificados)
   }
-
-  console.log(actualizacionCualificados)
 
 
   return (
